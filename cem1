@@ -1,0 +1,47 @@
+def check_cow_status(current: float | int) -> str:
+    """
+    Проверка датчика и состояния коровы по температуре.
+    Входные данные: current — ток датчика в мА.
+    Выходные данные: строка с состоянием датчика, температурой и состоянием коровы.
+    """
+    if type(current) not in (int, float):
+        raise TypeError("Сигнал должен быть числом")
+
+    if current < 0:
+        raise ValueError("Ток не может быть отрицательным")
+
+    if current == 0:
+        return "Датчик отключён"
+
+    if 0 < current < 3.9 or current > 20.1:
+        return "Датчик неисправен"
+
+    if not 4 <= current <= 20:
+        return "Сигнал вне рабочего диапазона"
+
+    temperature = (current - 4) * 75 / 16
+
+    if 37.5 <= temperature <= 39:
+        status = "всё отлично"
+    elif 35 < temperature < 37.4:
+        status = "требуется обогрев"
+    elif 39.1 < temperature < 39.5:
+        status = "требуется охлаждение"
+    elif temperature < 34.9:
+        status = "датчик свалился или корова плохо себя чувствует"
+    elif temperature > 39.6:
+        status = "корова заболела"
+    else:
+        status = "состояние коровы не определено"
+
+    return (
+        f"Получен сигнал датчика {current} мА, датчик исправен, "
+        f"температура {temperature:.2f} °C, {status}"
+    )
+
+
+try:
+    current = float(input("Введите ток датчика (мА): ").replace(",", "."))
+    print(check_cow_status(current))
+except (ValueError, TypeError) as error:
+    print(f"Ошибка: {error}")
